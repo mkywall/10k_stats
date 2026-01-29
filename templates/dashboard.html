@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>10k Perovskites Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .metric-card {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .metric-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+        }
+        .loading {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="gradient-bg text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h1 class="text-3xl font-bold">10k Perovskites Dashboard</h1>
+                    <p class="text-purple-100 mt-1">Real-time materials synthesis tracking</p>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="text-right">
+                        <p class="text-sm text-purple-100">Last updated</p>
+                        <p id="lastUpdate" class="font-semibold">Loading...</p>
+                    </div>
+                    <button onclick="refreshData()" class="bg-white text-purple-600 px-4 py-2 rounded-lg hover:bg-purple-50 transition font-medium">
+                        Refresh
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- KPI Cards -->
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+            <!-- Thin Films Card -->
+            <div class="glass-card metric-card rounded-xl shadow-md p-4">
+                <div class="text-center">
+                    <p class="text-gray-500 text-xs font-medium mb-1">Thin Films</p>
+                    <p id="thinFilmsCount" class="text-3xl font-bold text-purple-600">-</p>
+                </div>
+            </div>
+
+            <!-- Total Datasets Card -->
+            <div class="glass-card metric-card rounded-xl shadow-md p-4">
+                <div class="text-center">
+                    <p class="text-gray-500 text-xs font-medium mb-1">Total Datasets</p>
+                    <p id="totalDatasets" class="text-3xl font-bold text-blue-600">-</p>
+                </div>
+            </div>
+
+            <!-- Spin Run Datasets Card -->
+            <div class="glass-card metric-card rounded-xl shadow-md p-4">
+                <div class="text-center">
+                    <p class="text-gray-500 text-xs font-medium mb-1">Spin Runs</p>
+                    <p id="spinRunsCount" class="text-3xl font-bold text-green-600">-</p>
+                </div>
+            </div>
+
+            <!-- Sample Well Images Card -->
+            <div class="glass-card metric-card rounded-xl shadow-md p-4">
+                <div class="text-center">
+                    <p class="text-gray-500 text-xs font-medium mb-1">Sample Images</p>
+                    <p id="sampleWellCount" class="text-3xl font-bold text-orange-600">-</p>
+                </div>
+            </div>
+
+            <!-- UV-Vis Runs Card -->
+            <div class="glass-card metric-card rounded-xl shadow-md p-4">
+                <div class="text-center">
+                    <p class="text-gray-500 text-xs font-medium mb-1">UV-Vis Runs</p>
+                    <p id="uvvisRunsCount" class="text-3xl font-bold text-pink-600">-</p>
+                </div>
+            </div>
+
+            <!-- Spectra Card -->
+            <div class="glass-card metric-card rounded-xl shadow-md p-4">
+                <div class="text-center">
+                    <p class="text-gray-500 text-xs font-medium mb-1">UV-vis Spectra</p>
+                    <p id="spectraCount" class="text-3xl font-bold text-indigo-600">-</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Grid - Commented out for now -->
+        <!--
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <div class="glass-card rounded-xl shadow-md p-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Sample Types Distribution</h2>
+                <div id="sampleTypesChart" class="h-80"></div>
+            </div>
+
+            <div class="glass-card rounded-xl shadow-md p-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Key Dataset Types</h2>
+                <p class="text-gray-600 text-sm mb-2">Bubble size represents dataset volume</p>
+                <div id="datasetTypesChart" class="h-80"></div>
+            </div>
+        </div>
+        -->
+
+        <!-- Time Series and Latest Sample Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <!-- Time Series Chart -->
+            <div class="glass-card rounded-xl shadow-md p-6 lg:col-span-2">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Cumulative Thin Films Over Time</h2>
+                <div id="timeSeriesChart" class="h-96"></div>
+            </div>
+
+            <!-- Thumbnail of the Day Card -->
+            <div class="glass-card rounded-xl shadow-md p-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">🎬 Thumbnail of the Day</h2>
+                <div id="thumbnailOfDay">
+                    <div class="text-center text-gray-400">Loading...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Thin Films - Precursor Relationship -->
+        <div class="glass-card rounded-xl shadow-md p-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Thin Film - Precursor Relationships</h2>
+            <p class="text-gray-600 text-sm mb-4">Visualization of thin films grouped by their precursor solutions</p>
+            <div id="precursorChart" class="h-96"></div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 mt-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <p class="text-center text-gray-500 text-sm">
+                10k Perovskites Project Dashboard • Powered by BigQuery & Plotly • Auto-refreshes every 30 seconds
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        let refreshInterval;
+
+        async function fetchData() {
+            try {
+                const response = await fetch('/api/data');
+                if (!response.ok) throw new Error('Failed to fetch data');
+                const data = await response.json();
+                updateDashboard(data);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                alert('Error loading data: ' + error.message);
+            }
+        }
+
+        function updateDashboard(data) {
+            // Update timestamp
+            const timestamp = new Date(data.timestamp);
+            document.getElementById('lastUpdate').textContent = timestamp.toLocaleTimeString();
+
+            // Update KPI cards
+            document.getElementById('thinFilmsCount').textContent = data.thin_films_count.toLocaleString();
+            document.getElementById('totalDatasets').textContent = data.total_datasets.toLocaleString();
+            document.getElementById('spinRunsCount').textContent = data.spin_runs_count.toLocaleString();
+            document.getElementById('sampleWellCount').textContent = data.sample_well_count.toLocaleString();
+            document.getElementById('uvvisRunsCount').textContent = data.uvvis_datasets_count.toLocaleString();
+            document.getElementById('spectraCount').textContent = data.spectra_count.toLocaleString();
+
+            /*
+            // Sample Types Pie Chart - Commented out
+            const sampleTypesData = [{
+                values: data.sample_types.map(d => d.count),
+                labels: data.sample_types.map(d => d.sample_type),
+                type: 'pie',
+                hole: 0.4,
+                marker: {
+                    colors: ['#8b5cf6', '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#ec4899', '#6366f1']
+                },
+                textinfo: 'label+percent',
+                textposition: 'outside',
+                automargin: true
+            }];
+            const sampleTypesLayout = {
+                showlegend: true,
+                legend: { orientation: 'v', x: 1, y: 0.5 },
+                margin: { l: 20, r: 20, t: 20, b: 20 },
+                font: { family: 'Inter, sans-serif' }
+            };
+            Plotly.newPlot('sampleTypesChart', sampleTypesData, sampleTypesLayout, {responsive: true});
+            */
+
+            /*
+            // Bubble Visualization - Commented out
+            if (data.dataset_types_viz && data.dataset_types_viz.length > 0) {
+                const colorMap = {
+                    'Thin Film Synthesis': 'rgba(139, 92, 246, 0.7)',
+                    'Sample Well Images': 'rgba(59, 130, 246, 0.7)',
+                    'UV-Vis Spectra': 'rgba(34, 197, 94, 0.7)'
+                };
+
+                const positions = [
+                    {x: 0.5, y: 0.7},
+                    {x: 0.2, y: 0.3},
+                    {x: 0.8, y: 0.3}
+                ];
+
+                const traces = data.dataset_types_viz.map((item, i) => ({
+                    x: [positions[i].x],
+                    y: [positions[i].y],
+                    mode: 'markers+text',
+                    type: 'scatter',
+                    name: item.measurement,
+                    text: [`<b>${item.measurement}</b><br>${item.count.toLocaleString()} datasets`],
+                    textposition: 'middle center',
+                    textfont: { size: 14, color: 'white', family: 'Inter, sans-serif' },
+                    marker: {
+                        size: [Math.sqrt(item.count) * 3],
+                        sizemode: 'diameter',
+                        color: colorMap[item.measurement] || 'rgba(156, 163, 175, 0.7)',
+                        line: { color: 'white', width: 3 }
+                    },
+                    hovertemplate: `<b>${item.measurement}</b><br>Count: ${item.count.toLocaleString()}<extra></extra>`
+                }));
+
+                const bubbleLayout = {
+                    margin: { l: 20, r: 20, t: 20, b: 20 },
+                    xaxis: {
+                        range: [0, 1],
+                        showgrid: false,
+                        showticklabels: false,
+                        zeroline: false
+                    },
+                    yaxis: {
+                        range: [0, 1],
+                        showgrid: false,
+                        showticklabels: false,
+                        zeroline: false
+                    },
+                    font: { family: 'Inter, sans-serif' },
+                    showlegend: false,
+                    paper_bgcolor: 'rgba(0,0,0,0)',
+                    plot_bgcolor: 'rgba(0,0,0,0)',
+                    hovermode: 'closest'
+                };
+
+                Plotly.newPlot('datasetTypesChart', traces, bubbleLayout, {responsive: true, displayModeBar: false});
+            }
+            */
+
+            // Time Series Chart - Cumulative Thin Films
+            if (data.samples_time && data.samples_time.length > 0) {
+                console.log('Time series data:', data.samples_time);
+
+                const timeSeriesData = [{
+                    x: data.samples_time.map(d => new Date(d.date)),
+                    y: data.samples_time.map(d => d.cumulative_count),
+                    type: 'scatter',
+                    mode: 'lines+markers',
+                    fill: 'tozeroy',
+                    line: { color: '#8b5cf6', width: 3 },
+                    marker: { size: 8, color: '#667eea' },
+                    name: 'Cumulative Thin Films',
+                    hovertemplate: 'Date: %{x|%Y-%m-%d}<br>Total: %{y}<extra></extra>'
+                }];
+                const timeSeriesLayout = {
+                    margin: { l: 60, r: 40, t: 20, b: 60 },
+                    xaxis: {
+                        title: 'Date',
+                        type: 'date',
+                        tickformat: '%Y-%m-%d'
+                    },
+                    yaxis: { title: 'Cumulative Number of Thin Films' },
+                    font: { family: 'Inter, sans-serif' },
+                    hovermode: 'x unified'
+                };
+                Plotly.newPlot('timeSeriesChart', timeSeriesData, timeSeriesLayout, {responsive: true});
+            } else {
+                console.log('No time series data available');
+            }
+
+            // Thumbnail of the Day Widget
+            if (data.thumbnail_of_day) {
+                const sample = data.thumbnail_of_day;
+                const dateStr = sample.date_created ? new Date(sample.date_created).toLocaleDateString() : 'Unknown';
+                const isToday = sample.is_today || false;
+
+                let imageHtml = '';
+                if (sample.file_to_upload) {
+                    // If there's an image path, we'd need to construct the full URL
+                    // For now, show a placeholder or the path info
+                    imageHtml = `
+                        <div class="bg-gray-100 rounded-lg p-4 mb-3 text-sm text-gray-600">
+                            <p class="font-medium">Image available</p>
+                            <p class="text-xs mt-1 truncate" title="${sample.file_to_upload}">${sample.file_to_upload}</p>
+                        </div>
+                    `;
+                } else {
+                    imageHtml = `
+                        <div class="bg-gradient-to-br from-purple-100 to-blue-100 rounded-lg h-48 mb-3 flex items-center justify-center">
+                            <svg class="w-16 h-16 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                        </div>
+                    `;
+                }
+
+                const dateLabel = isToday ? 'Created Today' : 'Created';
+                const badgeHtml = isToday ? '' : '<span class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">Recent</span>';
+
+                const detailsHtml = `
+                    <div>
+                        ${imageHtml}
+                        <div class="space-y-2">
+                            <div class="border-b border-gray-200 pb-2">
+                                <p class="text-xs text-gray-500">Sample Name</p>
+                                <p class="font-semibold text-gray-800">${sample.sample_name || 'N/A'}</p>
+                            </div>
+                            <div class="border-b border-gray-200 pb-2">
+                                <p class="text-xs text-gray-500">Type</p>
+                                <p class="font-medium text-gray-700">${sample.sample_type || 'N/A'}</p>
+                            </div>
+                            <div class="border-b border-gray-200 pb-2">
+                                <div class="flex items-center justify-between">
+                                    <p class="text-xs text-gray-500">${dateLabel}</p>
+                                    ${badgeHtml}
+                                </div>
+                                <p class="font-medium text-gray-700">${dateStr}</p>
+                            </div>
+                            ${sample.description ? `
+                            <div class="border-b border-gray-200 pb-2">
+                                <p class="text-xs text-gray-500">Description</p>
+                                <p class="text-sm text-gray-700">${sample.description}</p>
+                            </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+
+                document.getElementById('thumbnailOfDay').innerHTML = detailsHtml;
+            } else {
+                document.getElementById('thumbnailOfDay').innerHTML = `
+                    <div class="text-center text-gray-400 py-8">
+                        <p class="mb-2">No sample images available</p>
+                        <p class="text-xs">Check back later!</p>
+                    </div>
+                `;
+            }
+
+            // Thin Films - Precursor Relationship (Sunburst or Treemap)
+            if (data.thin_films_precursors && data.thin_films_precursors.length > 0) {
+                // Group by precursor and remove padded zeros
+                const precursorGroups = {};
+                data.thin_films_precursors.forEach(item => {
+                    let precursor = item.precursor_name || 'Unknown Precursor';
+                    // Remove padded zeros (PS000001 -> PS1, TF000123 -> TF123)
+                    precursor = precursor.replace(/([A-Z]+)0*(\d+)/, '$1$2');
+                    if (!precursorGroups[precursor]) {
+                        precursorGroups[precursor] = 0;
+                    }
+                    precursorGroups[precursor]++;
+                });
+
+                // Sort by count (descending) to cluster similar sizes together
+                const sortedPrecursors = Object.entries(precursorGroups)
+                    .sort((a, b) => b[1] - a[1]);
+
+                const precursorLabels = sortedPrecursors.map(p => p[0]);
+                const precursorValues = sortedPrecursors.map(p => p[1]);
+
+                // Generate gradient colors: darker for more represented precursors
+                const maxCount = Math.max(...precursorValues);
+                const minCount = Math.min(...precursorValues);
+                const colors = precursorValues.map(count => {
+                    // Normalize count to 0-1 range
+                    const normalized = (count - minCount) / (maxCount - minCount);
+                    // Use purple gradient: darker for higher counts
+                    const lightness = 85 - (normalized * 50); // 85% to 35% lightness
+                    const saturation = 50 + (normalized * 30); // 50% to 80% saturation
+                    return `hsl(270, ${saturation}%, ${lightness}%)`;
+                });
+
+                const precursorData = [{
+                    type: 'treemap',
+                    labels: precursorLabels,
+                    parents: Array(precursorLabels.length).fill(''),
+                    values: precursorValues,
+                    textinfo: 'label+value+percent parent',
+                    marker: {
+                        colors: colors,
+                        line: { width: 2, color: 'white' }
+                    },
+                    hovertemplate: '<b>%{label}</b><br>Thin Films: %{value}<br>%{percentParent}<extra></extra>'
+                }];
+                const precursorLayout = {
+                    margin: { l: 0, r: 0, t: 0, b: 0 },
+                    font: { family: 'Inter, sans-serif', size: 12 }
+                };
+                Plotly.newPlot('precursorChart', precursorData, precursorLayout, {responsive: true});
+            }
+        }
+
+        function refreshData() {
+            document.getElementById('lastUpdate').textContent = 'Refreshing...';
+            fetchData();
+        }
+
+        // Initial load
+        fetchData();
+
+        // Auto-refresh every 30 seconds
+        refreshInterval = setInterval(fetchData, 30000);
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', () => {
+            if (refreshInterval) clearInterval(refreshInterval);
+        });
+    </script>
+</body>
+</html>
