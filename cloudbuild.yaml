@@ -1,5 +1,5 @@
 substitutions:
-  _SERVICE_NAME: '10k-stats-dashboard'
+  _SERVICE_NAME: 'dashboard-10k'
   _REGION: 'us-central1'
   _IMAGE_PATH: '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/${REPO_NAME}-${BRANCH_NAME}'
   _SERVICE_URL: 'https://${_SERVICE_NAME}-${PROJECT_NUMBER}.${_REGION}.run.app'
