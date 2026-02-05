@@ -1,7 +1,7 @@
 substitutions:
   _SERVICE_NAME: '10k-stats-dashboard'
   _REGION: 'us-central1'
-  _IMAGE_PATH: '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/${REPO_NAME}-${BRANCH_NAME}"
+  _IMAGE_PATH: '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/${REPO_NAME}-${BRANCH_NAME}'
   _SERVICE_URL: 'https://${_SERVICE_NAME}-${PROJECT_NUMBER}.${_REGION}.run.app'
 images:
   - '${_IMAGE_PATH}'
@@ -15,6 +15,7 @@ steps:
     args: [-c, 'docker build -t ${_IMAGE_PATH}:latest --cache-from ${_IMAGE_PATH}:latest .' ]
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', '${_IMAGE_PATH}:latest' ]
+
 # Step 3: Deploy to Cloud Run
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
