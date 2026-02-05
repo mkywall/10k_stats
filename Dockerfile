@@ -24,7 +24,7 @@ ENV FLASK_APP=dashboard_app.py
 ENV PYTHONUNBUFFERED=1
 
 # Expose port
-EXPOSE 5000
+EXPOSE 8080
 
 # Run the application
 CMD ["python", "dashboard_app.py"]
