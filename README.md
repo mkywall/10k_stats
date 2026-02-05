@@ -21,7 +21,7 @@ A beautiful, modern Flask-based dashboard for visualizing and tracking the 10k P
 ### 1. Navigate to Project Directory
 
 ```bash
-cd ~/10k-stats
+cd ~/dashboard-10k
 ```
 
 ### 2. Activate Virtual Environment
@@ -56,7 +56,7 @@ For development, authentication is currently disabled in the code. To enable it,
 ## Running the Dashboard
 
 ```bash
-cd ~/10k-stats
+cd ~/dashboard-10k
 source venv/bin/activate
 python dashboard_app.py
 ```
