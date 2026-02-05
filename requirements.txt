@@ -1,5 +1,7 @@
 flask==3.0.0
 google-cloud-bigquery==3.14.0
+git+https://github.com/MolecularFoundryCrucible/pycrucible
+python-dotenv
 db-dtypes==1.2.0
 pandas==2.3.3
 plotly==5.18.0
