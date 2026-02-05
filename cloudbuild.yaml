@@ -38,7 +38,7 @@ steps:
         PYOIDC_SECRET=pyoidc_secret_key:latest,
         ORCID_CLIENT_ID=orcid_client_id:latest,
         ORCID_CLIENT_SECRET=orcid_client_secret:latest,
-        GOOGLE_APPLICATION_CREDENTIALS=service_account_cred:latest
+        GOOGLE_APPLICATION_CREDENTIALS=service-account-cred:latest
       - '--allow-unauthenticated'
 
 timeout: 600s
