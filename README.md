@@ -38,10 +38,7 @@ pip install -r requirements.txt
 
 ### 4. Configure BigQuery Credentials
 
-The app expects your BigQuery credentials at:
-```
-~/.config/mf-crucible-9009d3780383.json
-```
+Specify a local path to your cloud credentials json file. 
 
 This is already configured in the code.
 
@@ -124,12 +121,6 @@ To modify the dashboard:
 If port 5000 is already in use, modify the port in `dashboard_app.py`:
 ```python
 app.run(debug=True, host='0.0.0.0', port=5001)
-```
-
-### BigQuery connection issues
-Verify your credentials file exists:
-```bash
-ls -la ~/.config/mf-crucible-9009d3780383.json
 ```
 
 ### Missing dependencies
