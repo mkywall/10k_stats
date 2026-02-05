@@ -22,14 +22,14 @@ from pycrucible.utils import get_tz_isoformat
 load_dotenv()
 cruc_client = CrucibleClient(
     api_url="https://crucible.lbl.gov/testapi",
-    api_key = os.environ.get("crucible_apikey")
+    api_key = os.environ.get("CRUCIBLE_API_KEY")
 )
 
 # Set up credentials
-os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = os.path.expanduser('~/.config/mf-crucible-9009d3780383.json')
+#os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = os.path.expanduser('~/.config/mf-crucible-9009d3780383.json')
 
 app = Flask(__name__)
-app.secret_key = os.urandom(24)  # Change this to a fixed secret in production
+app.secret_key = os.environ.get('PYOIDC_SECRET') #os.urandom(24)  # Change this to a fixed secret in production
 
 # ORCID OAuth configuration
 oauth = OAuth(app)
