@@ -9,6 +9,7 @@ from datetime import datetime
 from flask import Flask, render_template, redirect, url_for, session, jsonify
 from authlib.integrations.flask_client import OAuth
 from google.cloud import bigquery
+from google.oauth2 import service_account
 import plotly
 import plotly.graph_objs as go
 import plotly.express as px
@@ -16,6 +17,7 @@ import pandas as pd
 from functools import wraps
 import requests
 import base64
+import json
 from dotenv import load_dotenv
 from pycrucible import CrucibleClient
 from pycrucible.utils import get_tz_isoformat
@@ -27,7 +29,11 @@ cruc_client = CrucibleClient(
 
 # Set up credentials
 #os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = os.path.expanduser('~/.config/mf-crucible-9009d3780383.json')
-
+service_account_json_key = json.loads(os.environ.get('GOOGLE_APPLICATION_CREDENTIALS'))
+scope = 'https://www.googleapis.com/auth/cloud-platform'
+creds = service_account.Credentials.from_service_account_info(service_account_json_key,
+                                                              scopes=[scope]  # Add scopes as needed
+)
 app = Flask(__name__)
 app.secret_key = os.environ.get('PYOIDC_SECRET') #os.urandom(24)  # Change this to a fixed secret in production
 
