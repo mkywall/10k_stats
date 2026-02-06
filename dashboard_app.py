@@ -63,7 +63,7 @@ def get_thumbnail_image_data(dataset_id):
         download_links = cruc_client.get_dataset_download_links(dataset_id)
         print(f'{download_links=}')
 
-        download_url = [v for k,v in download_links.items() if k.endswith('.jpeg')][0]
+        download_url = [v for k,v in download_links.items() if k.endswith('.png')][0]
         print(f'{download_url=}')
 
         if not download_url:
