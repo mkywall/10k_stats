@@ -32,6 +32,7 @@ steps:
       - '--set-env-vars'
       - >-
         OIDC_REDIRECT_URI=https://${_SERVICE_NAME}-${PROJECT_NUMBER}.${_REGION}.run.app/redirect_uri
+        TZ=America/Los_Angeles
       - '--set-secrets'
       - >-
         CRUCIBLE_API_KEY=crucible_admin_apikey:latest,
