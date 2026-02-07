@@ -38,25 +38,56 @@
             height: auto;
             border-radius: 0.5rem;
             object-fit: cover;
-            max-height: 300px;
+            max-height: 200px;
+        }
+        @media (min-width: 768px) {
+            .thumbnail-image {
+                max-height: 250px;
+            }
+        }
+        @media (min-width: 1024px) {
+            .thumbnail-image {
+                max-height: 300px;
+            }
+        }
+        /* Responsive container */
+        .dashboard-container {
+            width: 100%;
+            max-width: 100%;
+            padding: 0 1rem;
+        }
+        /* Responsive chart heights */
+        .chart-container {
+            min-height: 250px;
+            height: auto;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                min-height: 350px;
+            }
+        }
+        @media (min-width: 1024px) {
+            .chart-container {
+                min-height: 400px;
+            }
         }
     </style>
 </head>
 <body class="bg-gray-50">
     <!-- Header -->
     <header class="gradient-bg text-white shadow-lg">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-            <div class="flex justify-between items-center">
-                <div>
-                    <h1 class="text-3xl font-bold">10k Perovskites Dashboard</h1>
-                    <p class="text-purple-100 mt-1">Real-time materials synthesis tracking</p>
+        <div class="dashboard-container mx-auto py-4 md:py-6">
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+                <div class="text-center sm:text-left">
+                    <h1 class="text-2xl md:text-3xl font-bold">10k Perovskites Dashboard</h1>
+                    <p class="text-purple-100 mt-1 text-sm md:text-base">Real-time materials synthesis tracking</p>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <div class="text-right">
-                        <p class="text-sm text-purple-100">Last updated</p>
-                        <p id="lastUpdate" class="font-semibold">Loading...</p>
+                    <div class="text-center sm:text-right">
+                        <p class="text-xs md:text-sm text-purple-100">Last updated</p>
+                        <p id="lastUpdate" class="font-semibold text-sm md:text-base">Loading...</p>
                     </div>
-                    <button onclick="refreshData()" class="bg-white text-purple-600 px-4 py-2 rounded-lg hover:bg-purple-50 transition font-medium">
+                    <button onclick="refreshData()" class="bg-white text-purple-600 px-3 py-2 md:px-4 text-sm md:text-base rounded-lg hover:bg-purple-50 transition font-medium">
                         Refresh
                     </button>
                 </div>
@@ -65,55 +96,55 @@
     </header>
 
     <!-- Main Content -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <main class="dashboard-container mx-auto py-4 md:py-8">
 
         <!-- KPI Cards -->
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 md:gap-4 mb-4 md:mb-8">
             <!-- Thin Films Card -->
-            <div class="glass-card metric-card rounded-xl shadow-md p-4">
+            <div class="glass-card metric-card rounded-lg md:rounded-xl shadow-md p-3 md:p-4">
                 <div class="text-center">
                     <p class="text-gray-500 text-xs font-medium mb-1">Thin Films</p>
-                    <p id="thinFilmsCount" class="text-3xl font-bold text-purple-600">-</p>
+                    <p id="thinFilmsCount" class="text-2xl md:text-3xl font-bold text-purple-600">-</p>
                 </div>
             </div>
 
             <!-- Total Datasets Card -->
-            <div class="glass-card metric-card rounded-xl shadow-md p-4">
+            <div class="glass-card metric-card rounded-lg md:rounded-xl shadow-md p-3 md:p-4">
                 <div class="text-center">
                     <p class="text-gray-500 text-xs font-medium mb-1">Total Datasets</p>
-                    <p id="totalDatasets" class="text-3xl font-bold text-blue-600">-</p>
+                    <p id="totalDatasets" class="text-2xl md:text-3xl font-bold text-blue-600">-</p>
                 </div>
             </div>
 
             <!-- Spin Run Datasets Card -->
-            <div class="glass-card metric-card rounded-xl shadow-md p-4">
+            <div class="glass-card metric-card rounded-lg md:rounded-xl shadow-md p-3 md:p-4">
                 <div class="text-center">
                     <p class="text-gray-500 text-xs font-medium mb-1">Spin Runs</p>
-                    <p id="spinRunsCount" class="text-3xl font-bold text-green-600">-</p>
+                    <p id="spinRunsCount" class="text-2xl md:text-3xl font-bold text-green-600">-</p>
                 </div>
             </div>
 
             <!-- Sample Well Images Card -->
-            <div class="glass-card metric-card rounded-xl shadow-md p-4">
+            <div class="glass-card metric-card rounded-lg md:rounded-xl shadow-md p-3 md:p-4">
                 <div class="text-center">
                     <p class="text-gray-500 text-xs font-medium mb-1">Sample Images</p>
-                    <p id="sampleWellCount" class="text-3xl font-bold text-orange-600">-</p>
+                    <p id="sampleWellCount" class="text-2xl md:text-3xl font-bold text-orange-600">-</p>
                 </div>
             </div>
 
             <!-- UV-Vis Runs Card -->
-            <div class="glass-card metric-card rounded-xl shadow-md p-4">
+            <div class="glass-card metric-card rounded-lg md:rounded-xl shadow-md p-3 md:p-4">
                 <div class="text-center">
                     <p class="text-gray-500 text-xs font-medium mb-1">UV-Vis Runs</p>
-                    <p id="uvvisRunsCount" class="text-3xl font-bold text-pink-600">-</p>
+                    <p id="uvvisRunsCount" class="text-2xl md:text-3xl font-bold text-pink-600">-</p>
                 </div>
             </div>
 
             <!-- Spectra Card -->
-            <div class="glass-card metric-card rounded-xl shadow-md p-4">
+            <div class="glass-card metric-card rounded-lg md:rounded-xl shadow-md p-3 md:p-4">
                 <div class="text-center">
                     <p class="text-gray-500 text-xs font-medium mb-1">UV-vis Spectra</p>
-                    <p id="spectraCount" class="text-3xl font-bold text-indigo-600">-</p>
+                    <p id="spectraCount" class="text-2xl md:text-3xl font-bold text-indigo-600">-</p>
                 </div>
             </div>
         </div>
@@ -135,16 +166,16 @@
         -->
 
         <!-- Time Series and Latest Sample Grid -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 mb-4 md:mb-8">
             <!-- Time Series Chart -->
-            <div class="glass-card rounded-xl shadow-md p-6 lg:col-span-2">
-                <h2 class="text-xl font-semibold text-gray-800 mb-4">Cumulative Thin Films Over Time</h2>
-                <div id="timeSeriesChart" class="h-96"></div>
+            <div class="glass-card rounded-lg md:rounded-xl shadow-md p-4 md:p-6 lg:col-span-2">
+                <h2 class="text-lg md:text-xl font-semibold text-gray-800 mb-3 md:mb-4">Cumulative Thin Films Over Time</h2>
+                <div id="timeSeriesChart" class="chart-container"></div>
             </div>
 
             <!-- Thumbnail of the Day Card -->
-            <div class="glass-card rounded-xl shadow-md p-6">
-                <h2 class="text-xl font-semibold text-gray-800 mb-4">🎬 Thumbnail of the Day</h2>
+            <div class="glass-card rounded-lg md:rounded-xl shadow-md p-4 md:p-6">
+                <h2 class="text-lg md:text-xl font-semibold text-gray-800 mb-3 md:mb-4">🎬 Thumbnail of the Day</h2>
                 <div id="thumbnailOfDay">
                     <div class="text-center text-gray-400">Loading...</div>
                 </div>
@@ -152,18 +183,18 @@
         </div>
 
         <!-- Thin Films - Precursor Relationship -->
-        <div class="glass-card rounded-xl shadow-md p-6">
-            <h2 class="text-xl font-semibold text-gray-800 mb-4">Thin Film - Precursor Relationships</h2>
-            <p class="text-gray-600 text-sm mb-4">Visualization of thin films grouped by their precursor solutions</p>
-            <div id="precursorChart" class="h-96"></div>
+        <div class="glass-card rounded-lg md:rounded-xl shadow-md p-4 md:p-6">
+            <h2 class="text-lg md:text-xl font-semibold text-gray-800 mb-3 md:mb-4">Thin Film - Precursor Relationships</h2>
+            <p class="text-gray-600 text-xs md:text-sm mb-3 md:mb-4">Visualization of thin films grouped by their precursor solutions</p>
+            <div id="precursorChart" class="chart-container"></div>
         </div>
 
     </main>
 
     <!-- Footer -->
-    <footer class="bg-white border-t border-gray-200 mt-12">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-            <p class="text-center text-gray-500 text-sm">
+    <footer class="bg-white border-t border-gray-200 mt-8 md:mt-12">
+        <div class="dashboard-container mx-auto py-4 md:py-6">
+            <p class="text-center text-gray-500 text-xs md:text-sm">
                 10k Perovskites Project Dashboard • Powered by BigQuery & Plotly • Auto-refreshes every 30 seconds
             </p>
         </div>
@@ -298,13 +329,18 @@
                     xaxis: {
                         title: 'Date',
                         type: 'date',
-                        tickformat: '%Y-%m-%d'
+                        tickformat: '%Y-%m-%d',
+                        automargin: true
                     },
-                    yaxis: { title: 'Cumulative Number of Thin Films' },
+                    yaxis: {
+                        title: 'Cumulative Number of Thin Films',
+                        automargin: true
+                    },
                     font: { family: 'Inter, sans-serif' },
-                    hovermode: 'x unified'
+                    hovermode: 'x unified',
+                    autosize: true
                 };
-                Plotly.newPlot('timeSeriesChart', timeSeriesData, timeSeriesLayout, {responsive: true});
+                Plotly.newPlot('timeSeriesChart', timeSeriesData, timeSeriesLayout, {responsive: true, displayModeBar: false});
             } else {
                 console.log('No time series data available');
             }
@@ -448,9 +484,10 @@
                 }];
                 const precursorLayout = {
                     margin: { l: 0, r: 0, t: 0, b: 0 },
-                    font: { family: 'Inter, sans-serif', size: 12 }
+                    font: { family: 'Inter, sans-serif', size: 12 },
+                    autosize: true
                 };
-                Plotly.newPlot('precursorChart', precursorData, precursorLayout, {responsive: true});
+                Plotly.newPlot('precursorChart', precursorData, precursorLayout, {responsive: true, displayModeBar: false});
             }
         }
 
@@ -468,6 +505,22 @@
         // Cleanup on page unload
         window.addEventListener('beforeunload', () => {
             if (refreshInterval) clearInterval(refreshInterval);
+        });
+
+        // Handle window resize for responsive charts
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                // Resize all Plotly charts
+                const chartIds = ['timeSeriesChart', 'precursorChart'];
+                chartIds.forEach(id => {
+                    const element = document.getElementById(id);
+                    if (element && element.data) {
+                        Plotly.Plots.resize(element);
+                    }
+                });
+            }, 250);
         });
     </script>
 </body>
